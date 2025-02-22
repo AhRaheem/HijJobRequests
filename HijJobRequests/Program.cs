@@ -1,0 +1,32 @@
+using HijJobRequests.Filters;
+using HijJobRequests.Middlewares;
+using HijJobRequests.Models;
+using HijJobRequests.Services.AppUser;
+using Microsoft.EntityFrameworkCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<DbIthraaContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection_101")));
+
+builder.Services.AddControllers(options => { options.Filters.Add<ApiResponseFilter>(); });
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseStaticFiles();
+app.UseHttpsRedirection();
+app.UseAuthentication();
+// app.UseAuthorization();
+app.MapControllers();
+app.UseMiddleware<ErrorHandlerMiddleware>();
+app.Run();
