@@ -47,6 +47,18 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
+
+app.Use(async (context, next) =>
+{
+    // Check if the request is for a file
+    if (!context.Request.Path.Value.StartsWith("/api") && 
+        !System.IO.Path.HasExtension(context.Request.Path.Value))
+    {
+        context.Request.Path = "/index.html";
+    }
+    await next();
+});
+
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

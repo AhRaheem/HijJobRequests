@@ -46,11 +46,12 @@ namespace HijJobRequests.Controllers
 
         private string SetAppUserOtp(string Identityfier)
         {
-            int[] digits = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            var Otp = string.Join("", Enumerable.Range(0, 4)
-                .Select(_ => digits[new Random().Next(digits.Length)]));
-            SharedVars.AppUsersOtps.Add((Identityfier, Otp, DateTime.UtcNow.AddMinutes(1)));
-            return Otp;
+            // int[] digits = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            // var Otp = string.Join("", Enumerable.Range(0, 4)
+            //     .Select(_ => digits[new Random().Next(digits.Length)]));
+            // SharedVars.AppUsersOtps.Add((Identityfier, Otp, DateTime.UtcNow.AddMinutes(1)));
+            // return Otp;
+            return 1111.ToString();
         }
 
         private async Task<string> GenerateToken(string Identityfier, string Company)
