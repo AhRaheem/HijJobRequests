@@ -51,7 +51,7 @@ app.UseStaticFiles();
 app.Use(async (context, next) =>
 {
     // Check if the request is for a file
-    if (!context.Request.Path.Value.StartsWith("/api") && 
+    if (!context.Request.Path.Value.StartsWith("/swagger") &&  !context.Request.Path.Value.StartsWith("/api") && 
         !System.IO.Path.HasExtension(context.Request.Path.Value))
     {
         context.Request.Path = "/index.html";
