@@ -45,23 +45,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors(b => b.WithOrigins("http://localhost:3000", "http://localhost:5287").AllowAnyHeader().AllowAnyMethod());
 app.UseStaticFiles();
-
-app.Use(async (context, next) =>
-{
-    // Check if the request is for a file
-    if (!context.Request.Path.Value.StartsWith("/swagger") &&  !context.Request.Path.Value.StartsWith("/api") && 
-        !System.IO.Path.HasExtension(context.Request.Path.Value))
-    {
-        context.Request.Path = "/index.html";
-    }
-    await next();
-});
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapFallbackToFile("index.html");
 app.UseMiddleware<ErrorHandlerMiddleware>();
 app.Run();
