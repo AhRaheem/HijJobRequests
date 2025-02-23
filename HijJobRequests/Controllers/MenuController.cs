@@ -1,11 +1,13 @@
 ﻿using HijJobRequests.Dtos;
 using HijJobRequests.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace HijJobRequests.Controllers
 {
-    public class MenuController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class MenuController : ControllerBase
     {
         private readonly DbIthraaContext _context;
 
@@ -14,6 +16,7 @@ namespace HijJobRequests.Controllers
             _context = context;
         }
 
+        [HttpGet("GetAll")]
         public async Task<ActionResult<List<MenuDto>>> GetMenu()
         {
             // Retrieve all active main menu items (AppPageMain)
@@ -38,7 +41,7 @@ namespace HijJobRequests.Controllers
                         Order = sub.FPageSubSort,
                         // Load pages
                         Pages = _context.AppPages
-                            .Where(p => p.FPageSubNo == sub.FPageSubNo )
+                            .Where(p => p.FPageSubNo == sub.FPageSubNo)
                             .OrderBy(p => p.FPageSort)
                             .Select(p => new PageDto
                             {
