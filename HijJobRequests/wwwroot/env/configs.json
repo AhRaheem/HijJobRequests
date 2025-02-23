@@ -1,0 +1,7 @@
+{
+  "REACT_APP_API_HOST": "https://localhost:7298/api/", 
+  "default_language": "ar",
+  "active_translation": true,
+  "default_theme": "light",
+  "active_theme": false
+}

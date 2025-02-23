@@ -1,0 +1,88 @@
+/*================================================================================
+	Item Name: Vuexy - Vuejs, HTML & Laravel Admin Dashboard Template
+	Version: 2.0
+	Author: PIXINVENT
+	Author URL: http://www.themeforest.net/user/pixinvent
+================================================================================
+
+NOTE:
+------
+PLACE HERE YOUR OWN SCSS CODES AND IF NEEDED, OVERRIDE THE STYLES FROM THE OTHER STYLESHEETS.
+WE WILL RELEASE FUTURE UPDATES SO IN ORDER TO NOT OVERWRITE YOUR STYLES IT'S BETTER LIKE THIS.  */
+
+.bg-grey { background-color: #ffffff; }
+table#printable-area { display: none; }
+input.date-picker[disabled] {
+  background-color: #efefef !important;
+  color: #6e6a7b;
+}
+input.time-picker[disabled] {
+  background-color: #efefef !important;
+  color: #6e6a7b;
+}
+.vertical-menu-header-title{
+  font-size: 15px !important;
+  margin-inline-start: 5px !important;
+}
+
+.vertical-menu-header-icon{
+  margin-bottom: 5px !important;
+}
+
+.operations-filter {
+  padding: 1em;
+  background-color: #eae4dc;
+}
+
+.operations-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: nowrap;
+  flex-direction: row;
+
+  @media only screen and (max-width: 1140px) {
+    flex-direction: column;
+  }
+
+  .cards-list {
+    max-width: 17rem;
+    background-color: #eae4dc;
+    padding: 5px;
+
+    @media only screen and (max-width: 1140px) {
+      max-width: 100%;
+    }
+  }
+}
+
+span.input-group-text {
+  color: #212529;
+  background-color: #e9ecef;
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+}
+
+// dark mode styles
+.dark-layout {
+  
+    input.time-picker[disabled] {
+      background-color: #283046 !important;
+      color: #6e7481;
+    } 
+  input.date-picker[disabled] {
+    background-color: #283046 !important;
+    color: #6e7481;
+  }
+ 
+  .cards-list {
+    background-color: #1a2238;
+  }
+
+  .operations-filter {
+    background-color: #1a2238;
+  }
+
+  .operations-container {
+    .dragging { border: 2px dashed #283046 }
+  }
+}

@@ -1,0 +1,6 @@
+@font-face {
+    font-family: 'FFShamel';
+    src: url('/ArbFONTS-FFShamelFamily-SansOneBold.ttf') format('truetype'); /* تأكد من تعديل المسار حسب اسم ملف الخط */
+    font-weight: normal;
+    font-style: normal;
+}
