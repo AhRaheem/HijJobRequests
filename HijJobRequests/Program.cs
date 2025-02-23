@@ -45,7 +45,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors(b => b.WithOrigins("https://sadatest.sada-com.com", "http://localhost:3000", "http://localhost:5287").AllowAnyHeader().AllowAnyMethod());
+app.UseCors(b => b.WithOrigins("https://sadatest.sada-com.com", "http://localhost:3000","http://localhost:3001", "http://localhost:5287").AllowAnyHeader().AllowAnyMethod());
 app.UseStaticFiles();
 
 // app.UseHttpsRedirection();
