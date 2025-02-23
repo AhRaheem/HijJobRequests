@@ -35,6 +35,7 @@ namespace HijJobRequests.Controllers
         public async Task<ActionResult<string>> VerifyOtp(LoginDto model)
         {
             SharedVars.AppUsersOtps.RemoveWhere(x => x.Item3 < DateTime.UtcNow);
+            var xxx = SharedVars.AppUsersOtps.Any(x => x.Item1.Equals(model.Identityfier) && x.Item2.Equals(model.Otp)) ? await GenerateToken(model.Identityfier, model.Company) : string.Empty;
             return Ok(SharedVars.AppUsersOtps.Any(x => x.Item1.Equals(model.Identityfier) && x.Item2.Equals(model.Otp)) ? await GenerateToken(model.Identityfier, model.Company) : string.Empty);
         }
 
@@ -46,12 +47,12 @@ namespace HijJobRequests.Controllers
 
         private string SetAppUserOtp(string Identityfier)
         {
-            // int[] digits = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            // var Otp = string.Join("", Enumerable.Range(0, 4)
-            //     .Select(_ => digits[new Random().Next(digits.Length)]));
-            // SharedVars.AppUsersOtps.Add((Identityfier, Otp, DateTime.UtcNow.AddMinutes(1)));
-            // return Otp;
-            return 1111.ToString();
+            int[] digits = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            var Otp = "1111";
+                //string.Join("", Enumerable.Range(0, 4)
+                //.Select(_ => digits[new Random().Next(digits.Length)]));
+            SharedVars.AppUsersOtps.Add((Identityfier, Otp, DateTime.UtcNow.AddMinutes(1)));
+            return Otp;
         }
 
         private async Task<string> GenerateToken(string Identityfier, string Company)
