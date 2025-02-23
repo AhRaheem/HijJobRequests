@@ -1,12 +1,13 @@
-using System.Data.Entity;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using HijJobRequests.Dtos;
+using HijJobRequests.Dtos.AppUser;
 using HijJobRequests.Models;
 using HijJobRequests.Vars;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace HijJobRequests.Controllers
@@ -27,7 +28,7 @@ namespace HijJobRequests.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<string>> VerifyLogin(LoginDto model)
         {
-            return Ok((await _context.AppUsers.FirstOrDefaultAsync(x => x.FEmail.Equals(model.Identityfier) || x.FJawNo.Equals(model.Identityfier) || x.FIdNo.Equals(model.Identityfier) && x.FUserPass.Equals(model.Password))) is not null ? SetAppUserOtp(model.Identityfier) : string.Empty);
+            return Ok((await _context.AppUsers.Select(x=> new {x.FEmail,x.FIdNo,x.FJawNo,x.FUserPass}).AsNoTracking().FirstOrDefaultAsync(x => x.FEmail.Equals(model.Identityfier) || x.FJawNo.Equals(model.Identityfier) || x.FIdNo.Equals(model.Identityfier) && x.FUserPass.Equals(model.Password))) is not null ? SetAppUserOtp(model.Identityfier) : string.Empty);
         }
 
         [HttpPost("VerifyOtp")]
@@ -54,7 +55,7 @@ namespace HijJobRequests.Controllers
 
         private async Task<string> GenerateToken(string Identityfier, string Company)
         {
-            var AppUsr = await _context.AppUsers.SingleOrDefaultAsync(x => x.FEmail.Equals(Identityfier) || x.FJawNo.Equals(Identityfier) || x.FIdNo.Equals(Identityfier));
+            var AppUsr = await _context.AppUsers.Select(x=> new {x.FUserId,x.FUserName,x.FEmail,x.FIdNo,x.FJawNo,x.FUserPass}).AsNoTracking().FirstOrDefaultAsync(x => x.FEmail.Equals(Identityfier) || x.FJawNo.Equals(Identityfier) || x.FIdNo.Equals(Identityfier));
             var jwtSettings = _configuration.GetSection("JwtSettings");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Secret"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

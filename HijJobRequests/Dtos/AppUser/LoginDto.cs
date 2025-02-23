@@ -1,6 +1,6 @@
 using System;
 
-namespace HijJobRequests.Dtos;
+namespace HijJobRequests.Dtos.AppUser;
 
 public class LoginDto
 {
