@@ -40,7 +40,7 @@ namespace HijJobRequests.Controllers
         // [HttpGet("GetMenuItems/{UserId}")]
         // public async Task<ActionResult<IEnumerable<AppUserMenuItems>>> GetMenuItems(int UserId)
         // {
-        //     return Ok(await _context.AppUserMenuItems.Where(x => x.FUserId == UserId).ToListAsync());
+        //     return Ok();
         // }
 
         private string SetAppUserOtp(string Identityfier)
