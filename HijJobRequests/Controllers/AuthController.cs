@@ -9,11 +9,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HijJobRequests.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    [ApiController,Authorize]
     public class AuthController : ControllerBase
     {
         readonly DbIthraaContext _context;
@@ -25,13 +26,13 @@ namespace HijJobRequests.Controllers
             _configuration = configuration;
         }
 
-        [HttpPost("login")]
+        [HttpPost("login"),AllowAnonymous]
         public async Task<ActionResult<string>> VerifyLogin(LoginDto model)
         {
             return Ok((await _context.AppUsers.Select(x=> new {x.FEmail,x.FIdNo,x.FJawNo,x.FUserPass}).AsNoTracking().FirstOrDefaultAsync(x => x.FEmail.Equals(model.Identityfier) || x.FJawNo.Equals(model.Identityfier) || x.FIdNo.Equals(model.Identityfier) && x.FUserPass.Equals(model.Password))) is not null ? SetAppUserOtp(model.Identityfier) : string.Empty);
         }
 
-        [HttpPost("VerifyOtp")]
+        [HttpPost("VerifyOtp"),AllowAnonymous]
         public async Task<ActionResult<string>> VerifyOtp(LoginDto model)
         {
             SharedVars.AppUsersOtps.RemoveWhere(x => x.Item3 < DateTime.UtcNow);
@@ -50,6 +51,7 @@ namespace HijJobRequests.Controllers
             SharedVars.AppUsersOtps.Add((Identityfier, Otp, DateTime.UtcNow.AddMinutes(1)));
             return Otp;
         }
+
         private async Task<string> GenerateToken(string Identityfier, string Company)
         {
             var AppUsr = await _context.AppUsers.Select(x=> new {x.FUserId,x.FUserName,x.FEmail,x.FIdNo,x.FJawNo,x.FUserPass}).AsNoTracking().FirstOrDefaultAsync(x => x.FEmail.Equals(Identityfier) || x.FJawNo.Equals(Identityfier) || x.FIdNo.Equals(Identityfier));

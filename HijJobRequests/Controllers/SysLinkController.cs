@@ -4,11 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HijJobRequests.Dtos.Common;
+using HijJobRequests.Extenition;
+using Microsoft.AspNetCore.Authorization;
 
-namespace YourNamespace.Controllers
+namespace HijJobRequests.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    [ApiController,Authorize]
     public class SysLinkController : ControllerBase
     {
         private readonly DbIthraaContext _context;
@@ -20,9 +23,9 @@ namespace YourNamespace.Controllers
 
         // GET: api/SysLink
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SysLink>>> GetSysLinks()
+        public async Task<ActionResult<PaginationList<SysLink>>> GetSysLinks([FromQuery]PaginationParams paginationParams)
         {
-            return await _context.SysLinks.ToListAsync();
+            return await _context.SysLinks.GetPagedAsync(paginationParams);
         }
 
         // GET: api/SysLink/{id}

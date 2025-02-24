@@ -4,11 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HijJobRequests.Dtos.Common;
+using HijJobRequests.Extenition;
+using Microsoft.AspNetCore.Authorization;
 
-namespace YourNamespace.Controllers
+namespace HijJobRequests.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    [ApiController,Authorize]
     public class ChContractBasicController : ControllerBase
     {
         private readonly DbIthraaContext _context;
@@ -20,9 +23,9 @@ namespace YourNamespace.Controllers
 
         // GET: api/ChContractBasic
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ChContractBasic>>> GetChContractBasics()
+        public async Task<ActionResult<PaginationList<ChContractBasic>>> GetChContractBasics([FromQuery]PaginationParams paginationParams)
         {
-            return await _context.ChContractBasics.ToListAsync();
+            return await _context.ChContractBasics.GetPagedAsync(paginationParams);
         }
 
         // GET: api/ChContractBasic/{id}

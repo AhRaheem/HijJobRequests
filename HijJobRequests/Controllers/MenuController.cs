@@ -3,11 +3,12 @@ using HijJobRequests.Models;
 using HijJobRequests.Services.AppUser;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HijJobRequests.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    [ApiController,Authorize]
     public class MenuController : ControllerBase
     {
         private readonly DbIthraaContext _context;

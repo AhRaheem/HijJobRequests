@@ -4,11 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HijJobRequests.Dtos.Common;
+using HijJobRequests.Extenition;
+using Microsoft.AspNetCore.Authorization;
 
-namespace YourNamespace.Controllers
+namespace HijJobRequests.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    [ApiController,Authorize]
     public class PbcatcolController : ControllerBase
     {
         private readonly DbIthraaContext _context;
@@ -20,9 +23,9 @@ namespace YourNamespace.Controllers
 
         // GET: api/Pbcatcol
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Pbcatcol>>> GetPbcatcols()
+        public async Task<ActionResult<PaginationList<Pbcatcol>>> GetPbcatcols([FromQuery]PaginationParams paginationParams)
         {
-            return await _context.Pbcatcols.ToListAsync();
+            return await _context.Pbcatcols.GetPagedAsync(paginationParams);
         }
 
         // GET: api/Pbcatcol/{id}

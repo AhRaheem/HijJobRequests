@@ -4,11 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HijJobRequests.Dtos.Common;
+using HijJobRequests.Extenition;
+using Microsoft.AspNetCore.Authorization;
 
-namespace YourNamespace.Controllers
+namespace HijJobRequests.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    [ApiController,Authorize]
     public class PatternController : ControllerBase
     {
         private readonly DbIthraaContext _context;
@@ -20,9 +23,9 @@ namespace YourNamespace.Controllers
 
         // GET: api/Pattern
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Pattern>>> GetPatterns()
+        public async Task<ActionResult<PaginationList<Pattern>>> GetPatterns([FromQuery]PaginationParams paginationParams)
         {
-            return await _context.Patterns.ToListAsync();
+            return await _context.Patterns.GetPagedAsync(paginationParams);
         }
 
         // GET: api/Pattern/{id}

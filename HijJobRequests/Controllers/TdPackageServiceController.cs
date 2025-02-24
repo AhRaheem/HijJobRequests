@@ -4,11 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HijJobRequests.Dtos.Common;
+using HijJobRequests.Extenition;
+using Microsoft.AspNetCore.Authorization;
 
-namespace YourNamespace.Controllers
+namespace HijJobRequests.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    [ApiController,Authorize]
     public class TdPackageServiceController : ControllerBase
     {
         private readonly DbIthraaContext _context;
@@ -20,9 +23,9 @@ namespace YourNamespace.Controllers
 
         // GET: api/TdPackageService
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TdPackageService>>> GetTdPackageServices()
+        public async Task<ActionResult<PaginationList<TdPackageService>>> GetTdPackageServices([FromQuery]PaginationParams paginationParams)
         {
-            return await _context.TdPackageServices.ToListAsync();
+            return await _context.TdPackageServices.GetPagedAsync(paginationParams);
         }
 
         // GET: api/TdPackageService/{id}

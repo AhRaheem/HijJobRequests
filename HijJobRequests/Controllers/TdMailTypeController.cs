@@ -4,11 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HijJobRequests.Dtos.Common;
+using HijJobRequests.Extenition;
+using Microsoft.AspNetCore.Authorization;
 
-namespace YourNamespace.Controllers
+namespace HijJobRequests.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    [ApiController,Authorize]
     public class TdMailTypeController : ControllerBase
     {
         private readonly DbIthraaContext _context;
@@ -20,9 +23,9 @@ namespace YourNamespace.Controllers
 
         // GET: api/TdMailType
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TdMailType>>> GetTdMailTypes()
+        public async Task<ActionResult<PaginationList<TdMailType>>> GetTdMailTypes([FromQuery]PaginationParams paginationParams)
         {
-            return await _context.TdMailTypes.ToListAsync();
+            return await _context.TdMailTypes.GetPagedAsync(paginationParams);
         }
 
         // GET: api/TdMailType/{id}

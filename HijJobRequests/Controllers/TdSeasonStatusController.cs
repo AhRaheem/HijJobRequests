@@ -4,11 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HijJobRequests.Dtos.Common;
+using HijJobRequests.Extenition;
+using Microsoft.AspNetCore.Authorization;
 
-namespace YourNamespace.Controllers
+namespace HijJobRequests.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    [ApiController,Authorize]
     public class TdSeasonStatusController : ControllerBase
     {
         private readonly DbIthraaContext _context;
@@ -20,9 +23,9 @@ namespace YourNamespace.Controllers
 
         // GET: api/TdSeasonStatus
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TdSeasonStatus>>> GetTdSeasonStatuss()
+        public async Task<ActionResult<PaginationList<TdSeasonStatus>>> GetTdSeasonStatuss([FromQuery]PaginationParams paginationParams)
         {
-            return await _context.TdSeasonStatuses.ToListAsync();
+            return await _context.TdSeasonStatuses.GetPagedAsync(paginationParams);
         }
 
         // GET: api/TdSeasonStatus/{id}

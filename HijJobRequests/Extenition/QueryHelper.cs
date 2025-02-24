@@ -1,21 +1,27 @@
 using System;
 using System.Linq.Expressions;
+using HijJobRequests.Dtos.Common;
 using Microsoft.EntityFrameworkCore;
+using HijJobRequests.Dtos.Common;
 
 namespace HijJobRequests.Extenition;
 
 public static class QueryHelper
 {
-        public static async Task<(IEnumerable<T> Items, int TotalCount)> GetPagedAsync<T>(
+        public static async Task<PaginationList<T>> GetPagedAsync<T>(
         this IQueryable<T> query, 
-        int pageIndex, 
-        int pageSize, 
+        PaginationParams paginationParams, 
         Expression<Func<T, bool>> predicate = null) where T : class
     {
         query = predicate != null ? query.AsNoTracking().Where(predicate) : query.AsNoTracking();
         var totalCount = await query.CountAsync();
-        var items = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
-        return (items, totalCount);
+        var Data = new PaginationList<T>
+        {
+            List = await query.Skip((paginationParams.pageIndex - 1) * paginationParams.pageSize).Take(paginationParams.pageSize).ToListAsync(),
+            PageSize = paginationParams.pageSize,
+            TotalCount = totalCount
+        };
+        return Data;
     }
 
     public static IQueryable<T> WhereIf<T>(

@@ -4,11 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HijJobRequests.Dtos.Common;
+using HijJobRequests.Extenition;
+using Microsoft.AspNetCore.Authorization;
 
-namespace YourNamespace.Controllers
+namespace HijJobRequests.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    [ApiController,Authorize]
     public class AppPageController : ControllerBase
     {
         private readonly DbIthraaContext _context;
@@ -20,9 +23,9 @@ namespace YourNamespace.Controllers
 
         // GET: api/AppPage
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AppPage>>> GetAppPages()
+        public async Task<ActionResult<PaginationList<AppPage>>> GetAppPages([FromQuery]PaginationParams paginationParams)
         {
-            return await _context.AppPages.ToListAsync();
+            return await _context.AppPages.GetPagedAsync(paginationParams);
         }
 
         // GET: api/AppPage/{id}

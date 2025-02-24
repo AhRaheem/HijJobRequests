@@ -4,11 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HijJobRequests.Dtos.Common;
+using HijJobRequests.Extenition;
+using Microsoft.AspNetCore.Authorization;
 
-namespace YourNamespace.Controllers
+namespace HijJobRequests.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    [ApiController,Authorize]
     public class TdLanguageController : ControllerBase
     {
         private readonly DbIthraaContext _context;
@@ -20,9 +23,9 @@ namespace YourNamespace.Controllers
 
         // GET: api/TdLanguage
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TdLanguage>>> GetTdLanguages()
+        public async Task<ActionResult<PaginationList<TdLanguage>>> GetTdLanguages([FromQuery]PaginationParams paginationParams)
         {
-            return await _context.TdLanguages.ToListAsync();
+            return await _context.TdLanguages.GetPagedAsync(paginationParams);
         }
 
         // GET: api/TdLanguage/{id}
