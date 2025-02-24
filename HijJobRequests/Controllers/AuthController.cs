@@ -50,7 +50,6 @@ namespace HijJobRequests.Controllers
             SharedVars.AppUsersOtps.Add((Identityfier, Otp, DateTime.UtcNow.AddMinutes(1)));
             return Otp;
         }
-
         private async Task<string> GenerateToken(string Identityfier, string Company)
         {
             var AppUsr = await _context.AppUsers.Select(x=> new {x.FUserId,x.FUserName,x.FEmail,x.FIdNo,x.FJawNo,x.FUserPass}).AsNoTracking().FirstOrDefaultAsync(x => x.FEmail.Equals(Identityfier) || x.FJawNo.Equals(Identityfier) || x.FIdNo.Equals(Identityfier));

@@ -66,13 +66,18 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        builder =>
+    options.AddPolicy("AllowSpecificOrigin", policy =>
+    {
+        policy.SetIsOriginAllowed(origin =>
         {
-            builder.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
-        });
+            // Ensure we are allowing only specific origins (localhost and your ERP frontend URL)
+            var uri = new Uri(origin);
+            return uri.Host == "localhost" || uri.AbsoluteUri.StartsWith("https://sadatest.sada-com.com") || uri.AbsoluteUri.StartsWith("https://Login.ithraa.com.sa");
+        })
+        .AllowAnyHeader()          // Allow any headers
+        .AllowAnyMethod()          // Allow any HTTP methods
+        .AllowCredentials();       // Allow credentials such as cookies
+    });
 });
 var app = builder.Build();
 
@@ -81,7 +86,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors("AllowAll");
+app.UseCors("AllowSpecificOrigin");
 app.UseStaticFiles();
 
 // app.UseHttpsRedirection();
