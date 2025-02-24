@@ -39,11 +39,7 @@ namespace HijJobRequests.Controllers
             return Ok(SharedVars.AppUsersOtps.Any(x => x.Item1.Equals(model.Identityfier) && x.Item2.Equals(model.Otp)) ? await GenerateToken(model.Identityfier, model.Company) : string.Empty);
         }
 
-        // [HttpGet("GetMenuItems/{UserId}")]
-        // public async Task<ActionResult<IEnumerable<AppUserMenuItems>>> GetMenuItems(int UserId)
-        // {
-        //     return Ok();
-        // }
+       
 
         private string SetAppUserOtp(string Identityfier)
         {
@@ -88,6 +84,42 @@ namespace HijJobRequests.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
+        //public async Task <string> Register(RegisterDto emp)
+        //{
+        //    //HrEmp hrEmp = new HrEmp
+        //    //{
+        //    //    FAge = emp.FAge,
+        //    //    FBankIbanNo = emp.FBankIbanNo,
+        //    //    FBankNo = emp.FBankNo,
+        //    //    FBirthDate = emp.FBirthDate,
+        //    //    FCompanyId = emp.FCompanyId,
+        //    //    FEmail = emp.FEmail,
+        //    //    FEmailActivation = emp.FEmailActivation,
+        //    //    FEmpFamily = emp.FEmpFamily,
+        //    //    FEmpFamilyE = emp.FEmpFamilyE,
+        //    //    FEmpFather = emp.FEmpFather,
+        //    //    FEmpFatherE = emp.FEmpFatherE,
+        //    //    FEmpFirst = emp.FEmpFirst,
+        //    //    FEmpFirstE = emp.FEmpFirstE,
+        //    //    FEmpGrandfather = emp.FEmpGrandfather,
+        //    //    FEmpGrandfatherE = emp.FEmpGrandfatherE,
+        //    //    FEmpName = emp.FEmpName,
+        //    //    FEmpNameE = emp.FEmpNameE,
+        //    //    FEmpNo = emp.FEmpNo,
+        //    //    FGender = emp.FGender,
+        //    //    FHomeAddress = emp.FHomeAddress,
+        //    //    FHomeCity = emp.FHomeCity,
+        //    //    FIdDateExpiry = emp.FIdDateExpiry,
+        //    //    FIdType = emp.FIdType,
+        //    //    FIdNo = emp.FIdNo,
+        //    //    FIdSaveNo = emp.FIdSaveNo,
+        //    //    FJawNo = emp.FJawNo,
+        //    //    FMajorNo = emp.FMajorNo,
+        //    //    FNatiNo = emp.FNatiNo,
+        //    //    FQualiNo = emp.FQualiNo,
+        //    //};
+        //    //await _context.HrEmps.AddAsync(emp);
+        //    //await _context.SaveChangesAsync();
+        //}
     }
 }

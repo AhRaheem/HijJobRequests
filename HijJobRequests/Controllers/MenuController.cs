@@ -1,5 +1,6 @@
 ﻿using HijJobRequests.Dtos;
 using HijJobRequests.Models;
+using HijJobRequests.Services.AppUser;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,17 +11,18 @@ namespace HijJobRequests.Controllers
     public class MenuController : ControllerBase
     {
         private readonly DbIthraaContext _context;
-
-        public MenuController(DbIthraaContext context)
+        private readonly ICurrentUserService _currentUserService;
+        public MenuController(DbIthraaContext context, ICurrentUserService currentUserService)
         {
             _context = context;
+            _currentUserService = currentUserService;
         }
 
         [HttpGet("GetAll")]
         public async Task<ActionResult<List<MenuDto>>> GetMenu()
         {
-            // Retrieve all active main menu items (AppPageMain)
-            var mainMenus = await _context.AppPageMains
+            decimal _compnayId = Convert.ToDecimal(_currentUserService.GetUserCompany());
+            var mainMenus = await _context.AppPageMains.Where(x=>x.FCompanyId==_compnayId)
                 .OrderBy(m => m.FPageMainSort)
                 .ToListAsync();
 
@@ -32,7 +34,7 @@ namespace HijJobRequests.Controllers
                 Order = main.FPageMainSort,
                 // Load submenus
                 SubMenus = _context.AppPageSubs
-                    .Where(sub => sub.FPageMainNo == main.FPageMainNo)
+                    .Where(sub => sub.FPageMainNo == main.FPageMainNo && main.FCompanyId== _compnayId)
                     .OrderBy(sub => sub.FPageSubSort)
                     .Select(sub => new SubMenuDto
                     {
@@ -41,7 +43,7 @@ namespace HijJobRequests.Controllers
                         Order = sub.FPageSubSort,
                         // Load pages
                         Pages = _context.AppPages
-                            .Where(p => p.FPageSubNo == sub.FPageSubNo)
+                            .Where(p => p.FPageSubNo == sub.FPageSubNo && p.FCompanyId == _compnayId)
                             .OrderBy(p => p.FPageSort)
                             .Select(p => new PageDto
                             {
