@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using HijJobRequests.Dtos.Common;
 using HijJobRequests.Extenition;
 using Microsoft.AspNetCore.Authorization;
+using HijJobRequests.Dtos.AppUser;
+using HijJobRequests.Services.AppUser;
 
 namespace HijJobRequests.Controllers
 {
@@ -15,17 +17,46 @@ namespace HijJobRequests.Controllers
     public class HrEmpOrderCareController : ControllerBase
     {
         private readonly DbIthraaContext _context;
-
-        public HrEmpOrderCareController(DbIthraaContext context)
+        private readonly ICurrentUserService currentUserService;
+        public HrEmpOrderCareController(DbIthraaContext context, ICurrentUserService currentUserService)
         {
             _context = context;
+            this.currentUserService = currentUserService;
         }
 
         // GET: api/HrEmpOrderCare
         [HttpGet]
-        public async Task<ActionResult<PaginationList<HrEmpOrderCare>>> GetHrEmpOrderCares([FromQuery]PaginationParams paginationParams)
+        public async Task<ActionResult<PaginationList<HrEmpOrderCareDto>>> GetHrEmpOrderCares([FromQuery]PaginationParams paginationParams)
         {
-            return await _context.HrEmpOrderCares.GetPagedAsync(paginationParams);
+            decimal _companyId = Convert.ToDecimal(currentUserService.GetUserCompany());
+            var query = from care in _context.HrEmpOrderCares.Where(x=>x.FCompanyId== _companyId)
+                        join season in _context.TdSeasons on care.FSeasonNo equals season.FSeasonNo into seasonGroup
+                        from season in seasonGroup.DefaultIfEmpty() // Left join
+                        join section in _context.TdSections on care.FSectionNo equals section.FSectionNo into sectionGroup
+                        from section in sectionGroup.DefaultIfEmpty() // Left join
+                        select new HrEmpOrderCareDto
+                        {
+                            FLastUpdate = care.FLastUpdate,
+                            FLastUpdateUser = care.FLastUpdateUser,
+                            FLastUpdateSum = care.FLastUpdateSum,
+                            FLastUpdateOper = care.FLastUpdateOper,
+                            FLastUpdateOperNo = care.FLastUpdateOperNo,
+                            FOrderNo = care.FOrderNo,
+                            FSerNo = care.FSerNo,
+                            FSeasonName = season != null ? season.FSeasonName : "", // Handle null case
+                            FSectionName = section != null ? section.FSectionName : "", // Handle null case
+                            FCareType = care.FCareType,
+                            FCareNo = care.FCareNo,
+                            FCareDate = care.FCareDate,
+                            FCareTime = care.FCareTime,
+                            FCareNote = care.FCareNote,
+                            FReturnDate = care.FReturnDate,
+                            FReturnTime = care.FReturnTime,
+                            FReturnNote = care.FReturnNote,
+                            FCareStatus = care.FCareStatus
+                        };
+
+            return await query.GetPagedAsync(paginationParams);
         }
 
         // GET: api/HrEmpOrderCare/{id}
@@ -76,6 +107,13 @@ namespace HijJobRequests.Controllers
         [HttpPost]
         public async Task<ActionResult<HrEmpOrderCare>> PostHrEmpOrderCare(HrEmpOrderCare hrempordercare)
         {
+            decimal _companyId = Convert.ToDecimal(currentUserService.GetUserCompany());
+
+            var newFSerNo = await _context.HrEmpBudgets
+                .Where(x => x.FCompanyId == _companyId)
+                .CountAsync() + 1;
+            hrempordercare.FSerNo = newFSerNo;
+            hrempordercare.FCompanyId = _companyId;
             _context.HrEmpOrderCares.Add(hrempordercare);
             await _context.SaveChangesAsync();
 
