@@ -10,29 +10,33 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
+using HijJobRequests.Services.Email;
+using System.Threading.Tasks;
 
 namespace HijJobRequests.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController,Authorize]
+    [ApiController, Authorize]
     public class AuthController : ControllerBase
     {
         readonly DbIthraaContext _context;
         readonly IConfiguration _configuration;
+        readonly IEmailService _emailService;
 
-        public AuthController(DbIthraaContext context, IConfiguration configuration)
+        public AuthController(DbIthraaContext context, IConfiguration configuration, IEmailService emailService)
         {
             _context = context;
             _configuration = configuration;
+            _emailService = emailService;
         }
 
-        [HttpPost("login"),AllowAnonymous]
+        [HttpPost("login"), AllowAnonymous]
         public async Task<ActionResult<string>> VerifyLogin(LoginDto model)
         {
-            return Ok((await _context.AppUsers.Select(x=> new {x.FEmail,x.FIdNo,x.FJawNo,x.FUserPass}).AsNoTracking().FirstOrDefaultAsync(x => x.FEmail.Equals(model.Identityfier) || x.FJawNo.Equals(model.Identityfier) || x.FIdNo.Equals(model.Identityfier) && x.FUserPass.Equals(model.Password))) is not null ? SetAppUserOtp(model.Identityfier) : string.Empty);
+            return Ok((await _context.AppUsers.Select(x => new { x.FEmail, x.FUserId, x.FJawNo, x.FUserPass, x.FVerificatOption }).AsNoTracking().FirstOrDefaultAsync(x => x.FUserId.Equals(model.Identityfier) && x.FUserPass.Equals(model.Password))) is var Usr && Usr is not null ? SetAppUserOtp(model.Identityfier, Usr.FVerificatOption == 1 ? Usr.FJawNo : Usr.FEmail) : string.Empty);
         }
 
-        [HttpPost("VerifyOtp"),AllowAnonymous]
+        [HttpPost("VerifyOtp"), AllowAnonymous]
         public async Task<ActionResult<string>> VerifyOtp(LoginDto model)
         {
             SharedVars.AppUsersOtps.RemoveWhere(x => x.Item3 < DateTime.UtcNow);
@@ -40,21 +44,29 @@ namespace HijJobRequests.Controllers
             return Ok(SharedVars.AppUsersOtps.Any(x => x.Item1.Equals(model.Identityfier) && x.Item2.Equals(model.Otp)) ? await GenerateToken(model.Identityfier, model.Company) : string.Empty);
         }
 
-       
 
-        private string SetAppUserOtp(string Identityfier)
+
+        private async Task<string> SetAppUserOtp(string Identityfier, string VerifyIdentityfier)
         {
             int[] digits = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             var Otp = "1111";
-                //string.Join("", Enumerable.Range(0, 4)
-                //.Select(_ => digits[new Random().Next(digits.Length)]));
+            //string.Join("", Enumerable.Range(0, 4)
+            //.Select(_ => digits[new Random().Next(digits.Length)]));
             SharedVars.AppUsersOtps.Add((Identityfier, Otp, DateTime.UtcNow.AddMinutes(1)));
+            if (VerifyIdentityfier.Contains('@'))
+            {
+                await _emailService.SendEmailAsync(VerifyIdentityfier, "Otp", Otp);
+            }
+            else
+            {
+                //send sms
+            }
             return Otp;
         }
 
         private async Task<string> GenerateToken(string Identityfier, string Company)
         {
-            var AppUsr = await _context.AppUsers.Select(x=> new {x.FUserId,x.FUserName,x.FEmail,x.FIdNo,x.FJawNo,x.FUserPass}).AsNoTracking().FirstOrDefaultAsync(x => x.FEmail.Equals(Identityfier) || x.FJawNo.Equals(Identityfier) || x.FIdNo.Equals(Identityfier));
+            var AppUsr = await _context.AppUsers.Select(x => new { x.FUserId, x.FUserName, x.FEmail, x.FJawNo, x.FUserPass, x.FIdNo }).AsNoTracking().FirstOrDefaultAsync(x => x.FUserId.Equals(Identityfier));
             var jwtSettings = _configuration.GetSection("JwtSettings");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Secret"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

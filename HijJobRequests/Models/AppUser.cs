@@ -31,7 +31,7 @@ public partial class AppUser
 
     public string FEmail { get; set; } = null!;
 
-    public decimal FVerificatOption { get; set; }
+    public int FVerificatOption { get; set; }
 
     public decimal FSectionNo { get; set; }
 
